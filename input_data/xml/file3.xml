@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Insurance>
+   <Transaction>
+      <Date>2021-10-10</Date>
+      <Customer id="ID101000">
+         <Name>Amelia Law</Name>
+         <Address>47  Prince Consort Road</Address>
+         <Phone>070 6119 2887</Phone>
+         <Units></Units>
+      </Customer>
+   </Transaction>
+</Insurance>
+

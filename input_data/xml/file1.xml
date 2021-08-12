@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Insurance>
+   <Transaction>
+      <Date>2020-10-15</Date>
+      <Customer id="ID1011601">
+         <Name>Esmé Babin</Name>
+         <Address>3344 Joy Lane</Address>
+         <Phone>818-537-1995</Phone>
+         <Units>
+            <Auto>
+               <Vehicle id="V1000">
+                  <Make>GMC</Make>
+                  <VinNumber>1GDJC33648F200204</VinNumber>
+                  <ModelYear>2008</ModelYear>
+               </Vehicle>
+               <Vehicle id="V1001">
+                  <Make>Chevrolet</Make>
+                  <VinNumber>1G1Z464865F214437</VinNumber>
+                  <ModelYear>2005</ModelYear>
+               </Vehicle>
+            </Auto>
+         </Units>
+      </Customer>
+   </Transaction>
+</Insurance>
