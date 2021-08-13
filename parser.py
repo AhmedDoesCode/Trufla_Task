@@ -1,13 +1,52 @@
 import pandas as pd
 import xmltodict, json
 from bs4 import BeautifulSoup
+import datetime
 import sys
+import re
 
 def parse_csv(customers_file,vehicles_file):
     print("Parsing CSV: " + customers_file + " - " +vehicles_file)
 
 def parse_xml(xml_file):
-    print("Parsing XML: " + xml_file)
+    x = re.search(r'[ \w-]+?(?=\.)', xml_file)
+    output = {
+        "file_name": xml_file,
+        "transaction":{
+            "date":"",
+            "customer":{
+                "id":"",
+                "name":"",
+                "address":"",
+                "phone":""
+            },
+            "vehicles":[]
+        }
+    }
+    output["file_name"] = xml_file
+    with open(xml_file, 'r') as f:
+        data = xmltodict.parse(f.read())
+    
+    data = data["Insurance"]
+    output["transaction"]["date"] = data["Transaction"]["Date"]
+    output["transaction"]["customer"]["id"] = data["Transaction"]["Customer"]["@id"]
+    output["transaction"]["customer"]["name"] = data["Transaction"]["Customer"]["Name"]
+    output["transaction"]["customer"]["address"] = data["Transaction"]["Customer"]["Address"]
+    output["transaction"]["customer"]["phone"] = data["Transaction"]["Customer"]["Phone"]
+
+    for vehicle in data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]:
+        output["transaction"]["vehicles"].append({
+            "id": vehicle["@id"],
+            "make": vehicle["Make"],
+            "vin_number": vehicle["VinNumber"],
+            "model_year": vehicle["ModelYear"],
+        })
+
+    ct = datetime.datetime.now()
+    ts = ct.timestamp()
+
+    with open('output/xml/'+str(ts)+'_'+x[0]+'.json', 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=True, indent=4)
     
 
 

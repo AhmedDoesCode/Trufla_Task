@@ -1,0 +1,26 @@
+{
+    "file_name": "input_data/xml/file1.xml",
+    "transaction": {
+        "date": "2020-10-15",
+        "customer": {
+            "id": "ID1011601",
+            "name": "Esmأ© Babin",
+            "address": "3344 Joy Lane",
+            "phone": "818-537-1995"
+        },
+        "vehicles": [
+            {
+                "id": "V1000",
+                "make": "GMC",
+                "vin_number": "1GDJC33648F200204",
+                "model_year": "2008"
+            },
+            {
+                "id": "V1001",
+                "make": "Chevrolet",
+                "vin_number": "1G1Z464865F214437",
+                "model_year": "2005"
+            }
+        ]
+    }
+}
