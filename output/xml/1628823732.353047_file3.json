@@ -1,0 +1,13 @@
+{
+    "file_name": "input_data/xml/file3.xml",
+    "transaction": {
+        "date": "2021-10-10",
+        "customer": {
+            "id": "ID101000",
+            "name": "Amelia Law",
+            "address": "47  Prince Consort Road",
+            "phone": "070 6119 2887"
+        },
+        "vehicles": []
+    }
+}

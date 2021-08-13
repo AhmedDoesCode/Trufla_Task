@@ -33,14 +33,21 @@ def parse_xml(xml_file):
     output["transaction"]["customer"]["name"] = data["Transaction"]["Customer"]["Name"]
     output["transaction"]["customer"]["address"] = data["Transaction"]["Customer"]["Address"]
     output["transaction"]["customer"]["phone"] = data["Transaction"]["Customer"]["Phone"]
+    print(type(data["Transaction"]["Customer"]["Units"]))
+    if data["Transaction"]["Customer"]["Units"] is not None:
+        if type(data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]) is not list:
+            data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"] = [data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]]
 
-    for vehicle in data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]:
-        output["transaction"]["vehicles"].append({
-            "id": vehicle["@id"],
-            "make": vehicle["Make"],
-            "vin_number": vehicle["VinNumber"],
-            "model_year": vehicle["ModelYear"],
-        })
+        
+        
+        for vehicle in data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]:
+            print(vehicle)
+            output["transaction"]["vehicles"].append({
+                "id": vehicle["@id"],
+                "make": vehicle["Make"],
+                "vin_number": vehicle["VinNumber"],
+                "model_year": vehicle["ModelYear"],
+            })
 
     ct = datetime.datetime.now()
     ts = ct.timestamp()
