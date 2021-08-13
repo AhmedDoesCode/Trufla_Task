@@ -1,3 +1,4 @@
+import urllib.request as request
 import pandas as pd
 import xmltodict, json
 from bs4 import BeautifulSoup
@@ -16,12 +17,25 @@ def parse_csv(customers_file,vehicles_file):
         vehicles = []
         for v_index,vehicle in vehicles_file_DF.iterrows():
             if vehicle['owner_id'] == customer['id']:
-                vehicles.append({
-                "id":vehicle['id'],
-                "make":vehicle['make'],
-                "vin_number":vehicle['vin_number'],
-                "model_year": str(vehicle['model_year'])
-                },)
+                enriched_data = enrich(vehicle['vin_number'],str(vehicle['model_year']))
+                if enriched_data == 0:
+                    vehicles.append({
+                    "id":vehicle['id'],
+                    "make":vehicle['make'],
+                    "vin_number":vehicle['vin_number'],
+                    "model_year": str(vehicle['model_year']),
+                    },)
+                else:
+                    vehicles.append({
+                    "id":vehicle['id'],
+                    "make":vehicle['make'],
+                    "vin_number":vehicle['vin_number'],
+                    "model_year": str(vehicle['model_year']),
+                    "model": enriched_data["Results"][0]["Model"],
+                    "manufacturer": enriched_data["Results"][0]["Manufacturer"],
+                    "plant_country": enriched_data["Results"][0]["PlantCountry"],
+                    "vehicle_type": enriched_data["Results"][0]["VehicleType"]
+                    },)
 
         output.append({
             "customer_file_name": customers_file,
@@ -39,15 +53,18 @@ def parse_csv(customers_file,vehicles_file):
         })
     ct = datetime.datetime.now()
     ts = ct.timestamp()
-        
+    
+    
     for index, customer in enumerate(output):
-        with open('output/csv/'+str(ts)+'_'+customers_file_name[0]+'_'+vehicles_file_name[0]+'_'+str(index)+'.json', 'w', encoding='utf-8') as f:
+        with open('output/csv/'+str(ts)+'_'+customers_file_name[0]+'_'+vehicles_file_name[0]+'_'+str(index)+'_enriched.json', 'w', encoding='utf-8') as f:
             json.dump(output[index], f, ensure_ascii=True, indent=4)
 
     
 
 def parse_xml(xml_file):
     x = re.search(r'[ \w-]+?(?=\.)', xml_file)
+    ct = datetime.datetime.now()
+    ts = ct.timestamp()
     output = {
         "file_name": xml_file,
         "transaction":{
@@ -71,7 +88,6 @@ def parse_xml(xml_file):
     output["transaction"]["customer"]["name"] = data["Transaction"]["Customer"]["Name"]
     output["transaction"]["customer"]["address"] = data["Transaction"]["Customer"]["Address"]
     output["transaction"]["customer"]["phone"] = data["Transaction"]["Customer"]["Phone"]
-    print(type(data["Transaction"]["Customer"]["Units"]))
     if data["Transaction"]["Customer"]["Units"] is not None:
         if type(data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]) is not list:
             data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"] = [data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]]
@@ -79,21 +95,49 @@ def parse_xml(xml_file):
         
         
         for vehicle in data["Transaction"]["Customer"]["Units"]["Auto"]["Vehicle"]:
-            print(vehicle)
-            output["transaction"]["vehicles"].append({
-                "id": vehicle["@id"],
-                "make": vehicle["Make"],
-                "vin_number": vehicle["VinNumber"],
-                "model_year": vehicle["ModelYear"],
-            })
+            enriched_data = enrich(vehicle["VinNumber"],vehicle["ModelYear"])
+            if enriched_data == 0:
+                output["transaction"]["vehicles"].append({
+                    "id": vehicle["@id"],
+                    "make": vehicle["Make"],
+                    "vin_number": vehicle["VinNumber"],
+                    "model_year": vehicle["ModelYear"],
+                })
 
-    ct = datetime.datetime.now()
-    ts = ct.timestamp()
+                with open('output/xml/'+str(ts)+'_'+x[0]+'.json', 'w', encoding='utf-8') as f:
+                    json.dump(output, f, ensure_ascii=True, indent=4)
+                return
+            else:
+                output["transaction"]["vehicles"].append({
+                    "id": vehicle["@id"],
+                    "make": vehicle["Make"],
+                    "vin_number": vehicle["VinNumber"],
+                    "model_year": vehicle["ModelYear"],
+                    "model": enriched_data["Results"][0]["Model"],
+                    "manufacturer": enriched_data["Results"][0]["Manufacturer"],
+                    "plant_country": enriched_data["Results"][0]["PlantCountry"],
+                    "vehicle_type": enriched_data["Results"][0]["VehicleType"]
+                })
 
+                with open('output/xml/'+str(ts)+'_'+x[0]+'_enriched.json', 'w', encoding='utf-8') as f:
+                    json.dump(output, f, ensure_ascii=True, indent=4)
+                return
     with open('output/xml/'+str(ts)+'_'+x[0]+'.json', 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=True, indent=4)
+
+
+   
     
 
+def enrich(vin,model):
+    with request.urlopen('https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/'+vin+'?format=json&modelyear='+model) as response:
+        if response.getcode() == 200:
+            source = response.read()
+            data = json.loads(source)
+            return data
+        else:
+            print('An error occurred while attempting to retrieve data from the API.')
+            return 0
 
 if __name__ == '__main__':
     input_ext = sys.argv[1]

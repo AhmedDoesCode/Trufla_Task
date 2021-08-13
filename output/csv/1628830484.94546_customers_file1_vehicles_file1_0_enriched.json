@@ -1,0 +1,25 @@
+{
+    "customer_file_name": "input_data/csv/customers_file1.csv",
+    "vehicle_file_name": "input_data/csv/vehicles_file1.csv",
+    "transaction": {
+        "date": "31/01/2020",
+        "customer": {
+            "id": "ID5410",
+            "name": "Melissa T Miller",
+            "address": "2837  Fidler Drive",
+            "phone": "210-624-7306"
+        },
+        "vehicles": [
+            {
+                "id": "V1475",
+                "make": "Ford",
+                "vin_number": "1FTSW3XG5FKB11488",
+                "model_year": "2015",
+                "model": "Transit",
+                "manufacturer": "FORD MOTOR COMPANY, USA",
+                "plant_country": "UNITED STATES (USA)",
+                "vehicle_type": "TRUCK "
+            }
+        ]
+    }
+}

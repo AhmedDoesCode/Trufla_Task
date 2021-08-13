@@ -1,0 +1,35 @@
+{
+    "customer_file_name": "input_data/csv/customers_file1.csv",
+    "vehicle_file_name": "input_data/csv/vehicles_file1.csv",
+    "transaction": {
+        "date": "25/04/2020",
+        "customer": {
+            "id": "ID9857",
+            "name": "Daniel I Walker",
+            "address": "3853  Hilltop Street",
+            "phone": "413-655-7397"
+        },
+        "vehicles": [
+            {
+                "id": "V3015",
+                "make": "Chevrolet",
+                "vin_number": "1G1ZD5EB6AF0053EX",
+                "model_year": "2010",
+                "model": "Malibu",
+                "manufacturer": "GENERAL MOTORS LLC",
+                "plant_country": "UNITED STATES (USA)",
+                "vehicle_type": "PASSENGER CAR"
+            },
+            {
+                "id": "V2014",
+                "make": "Honda",
+                "vin_number": "JH2SC3327WM200123",
+                "model_year": "1998",
+                "model": "CBR900",
+                "manufacturer": "HONDA MOTOR CO., LTD",
+                "plant_country": "JAPAN",
+                "vehicle_type": "MOTORCYCLE"
+            }
+        ]
+    }
+}
