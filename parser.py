@@ -6,7 +6,45 @@ import sys
 import re
 
 def parse_csv(customers_file,vehicles_file):
-    print("Parsing CSV: " + customers_file + " - " +vehicles_file)
+    #print("Parsing CSV: " + customers_file + " - " +vehicles_file)
+    customers_file_DF = pd.read_csv(customers_file)
+    vehicles_file_DF = pd.read_csv(vehicles_file)
+    customers_file_name = re.search(r'[ \w-]+?(?=\.)', customers_file)
+    vehicles_file_name = re.search(r'[ \w-]+?(?=\.)', vehicles_file)
+    output = []
+    for c_index,customer in customers_file_DF.iterrows():
+        vehicles = []
+        for v_index,vehicle in vehicles_file_DF.iterrows():
+            if vehicle['owner_id'] == customer['id']:
+                vehicles.append({
+                "id":vehicle['id'],
+                "make":vehicle['make'],
+                "vin_number":vehicle['vin_number'],
+                "model_year": str(vehicle['model_year'])
+                },)
+
+        output.append({
+            "customer_file_name": customers_file,
+            "vehicle_file_name": vehicles_file,
+            "transaction":{
+                "date":customer['date'],
+                "customer":{
+                    "id":customer['id'],
+                    "name":customer['name'],
+                    "address":customer['address'],
+                    "phone":customer['phone']
+                },
+                "vehicles":vehicles
+            }
+        })
+    ct = datetime.datetime.now()
+    ts = ct.timestamp()
+        
+    for index, customer in enumerate(output):
+        with open('output/csv/'+str(ts)+'_'+customers_file_name[0]+'_'+vehicles_file_name[0]+'_'+str(index)+'.json', 'w', encoding='utf-8') as f:
+            json.dump(output[index], f, ensure_ascii=True, indent=4)
+
+    
 
 def parse_xml(xml_file):
     x = re.search(r'[ \w-]+?(?=\.)', xml_file)
