@@ -1,0 +1,21 @@
+{
+    "customer_file_name": "input_data/csv/customers_file1.csv",
+    "vehicle_file_name": "input_data/csv/vehicles_file1.csv",
+    "transaction": {
+        "date": "16/03/2020",
+        "customer": {
+            "id": "ID6651",
+            "name": "Pauline J Buxton",
+            "address": "1927  Pinnickinick Street",
+            "phone": "360-727-9275"
+        },
+        "vehicles": [
+            {
+                "id": "V786",
+                "make": "Nissan",
+                "vin_number": "JN6JD02S0E0011849",
+                "model_year": "2014"
+            }
+        ]
+    }
+}
