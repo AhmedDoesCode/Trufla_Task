@@ -1,7 +1,6 @@
 import urllib.request as request
 import pandas as pd
 import xmltodict, json
-from bs4 import BeautifulSoup
 import datetime
 import sys
 import re
