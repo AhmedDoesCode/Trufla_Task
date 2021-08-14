@@ -5,6 +5,17 @@ from bs4 import BeautifulSoup
 import datetime
 import sys
 import re
+import urllib
+from pymongo import MongoClient
+import pymongo
+
+def get_database():
+    CONNECTION_STRING = "mongodb+srv://trufla_admin:" + urllib.parse.quote("P@ssw0rd") + "@trufla.if4c2.mongodb.net/trufla?retryWrites=true&w=majority"
+    
+    trufla_ = MongoClient(CONNECTION_STRING)
+    return trufla_['trufla']  
+    
+    
 
 def parse_csv(customers_file,vehicles_file):
     #print("Parsing CSV: " + customers_file + " - " +vehicles_file)
@@ -54,8 +65,9 @@ def parse_csv(customers_file,vehicles_file):
     ct = datetime.datetime.now()
     ts = ct.timestamp()
     
-    
+    csv_collection.insert_many(output)
     for index, customer in enumerate(output):
+
         with open('output/csv/'+str(ts)+'_'+customers_file_name[0]+'_'+vehicles_file_name[0]+'_'+str(index)+'_enriched.json', 'w', encoding='utf-8') as f:
             json.dump(output[index], f, ensure_ascii=True, indent=4)
 
@@ -103,7 +115,7 @@ def parse_xml(xml_file):
                     "vin_number": vehicle["VinNumber"],
                     "model_year": vehicle["ModelYear"],
                 })
-
+                xml_collection.insert_one(output)
                 with open('output/xml/'+str(ts)+'_'+x[0]+'.json', 'w', encoding='utf-8') as f:
                     json.dump(output, f, ensure_ascii=True, indent=4)
                 return
@@ -118,15 +130,10 @@ def parse_xml(xml_file):
                     "plant_country": enriched_data["Results"][0]["PlantCountry"],
                     "vehicle_type": enriched_data["Results"][0]["VehicleType"]
                 })
-
+                xml_collection.insert_one(output)
                 with open('output/xml/'+str(ts)+'_'+x[0]+'_enriched.json', 'w', encoding='utf-8') as f:
                     json.dump(output, f, ensure_ascii=True, indent=4)
                 return
-    with open('output/xml/'+str(ts)+'_'+x[0]+'.json', 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=True, indent=4)
-
-
-   
     
 
 def enrich(vin,model):
@@ -141,6 +148,10 @@ def enrich(vin,model):
 
 if __name__ == '__main__':
     input_ext = sys.argv[1]
+    # Get the database
+    trufla_db = get_database()
+    xml_collection = trufla_db["xml"]
+    csv_collection = trufla_db["csv"]
     if input_ext == "csv":
         customers_file = sys.argv[2]
         vehicles_file = sys.argv[3]
